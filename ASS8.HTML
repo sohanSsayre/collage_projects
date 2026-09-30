@@ -1,0 +1,102 @@
+Web technology assignment 
+no. 8
+<html>
+<head>
+<script language = "javaScript">
+function cube( )
+{
+var a = document.form1.field1.value
+var b = a* a * a
+document.form1.field2.value = b 
+}
+
+function squre( )
+{
+var a = document.form1.field1.value
+var b = a* a
+document.form1.field2.value = b
+}
+
+function fact( )
+{
+var n =eval(document.form1.field1.value)
+var f= 1
+for (var i = 1;i<=n;i++)
+{
+f=f*i
+}
+document.form1.field2.value =f
+}
+
+function rev( )
+{
+var n = eval(document.form1.field1.value)
+var r = 0
+while(n>0)
+{
+r= parseInt(n%10+r*10)
+n=parseInt(n/10)
+}
+
+document.form1.field2.value = r
+}
+
+function arm( )
+{
+var n=eval(document.form1.field1.value)
+var sum=0
+var m=n
+var r=0
+while(n>0)
+{
+r=parseInt(n%10)
+sum=parseInt(sum+r*r*r)
+n=parseInt(n/10)
+}
+if(sum==m)
+document.form1.field2.value=("number is armstrong")
+else
+
+document.form1.field2.value=("number is not armstrong")
+}
+
+function pn( )
+{
+var n =eval(document.form1.field1.value)
+if(n>0)
+{
+
+document.form1.field2.value=("number is pos")
+}
+else
+{
+
+document.form1.field2.value=("number is neg")
+}
+}
+
+
+</script>
+</head>
+<body>
+
+<form name = form1>
+Enter No<input type ="text" name="field1">
+
+Result<input type ="text" name="field2">
+
+<input type ="button" value ="cube" onClick = "cube( )">
+
+<input type ="button" value ="squre" onClick = "squre( )">
+
+<input type ="button" value ="factorial" onClick = "fact( )">
+
+<input type ="button" value ="rev" onClick = "rev( )">
+
+<input type ="button" value ="arm" onClick = "arm( )">
+
+<input type ="button" value ="posneg" onClick = "pn( )">
+
+</form>
+</body>
+</html>
