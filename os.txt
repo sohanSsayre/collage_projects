@@ -1,0 +1,1010 @@
+==============================================================
+ OPERATING SYSTEM (LINUX / SHELL) PRACTICAL NOTES
+ Name  : Savani Atul Rajopadhye
+ Roll  : 552        Class : T.Y.B.Sc (CS)        Batch : B3
+ Yashwantrao Mohite College of Arts, Science & Commerce, Pune
+ Department of Computer Science
+==============================================================
+
+INDEX
+-----
+ 1. Basic Linux Commands ........................ 07/07/25
+ 2. Filtering Commands .......................... 14/07/25
+ 3. Pattern Matching Commands (grep, sed) ....... 21/07/25
+ 4. AWK Commands ................................ 28/07/25
+ 5. Conditional & Loop Structures using AWK ..... 04/08/25
+ 6. Built-in Functions & Array Operations in AWK  11/08/25
+ 7. Conditional Statements in Shell Programming . 18/08/25
+ 8. Loop Structures in Shell Programming ........ 01/09/25
+
+NOTE: Items marked [FIXED] are corrections / improvements made to
+the original handwritten notes. Items marked [ADDED] are extra
+useful options or tips that were not in the original.
+
+
+##############################################################
+ EXPERIMENT 1 : IMPLEMENTATION OF BASIC LINUX COMMANDS
+##############################################################
+
+Aim: Write basic Linux commands with options and examples.
+
+--------------------------------------------------------------
+1. date
+--------------------------------------------------------------
+Purpose : Print the date and time.
+Syntax  : date [options] [+format]
+Example : $ date
+Output  : Mon Jul 28 09:59:00 IST 2025
+
+Format options (used as  date +%X):
+  %a  Abbreviated weekday name            $ date +%a   ->  Mon
+  %A  Full weekday name                   $ date +%A   ->  Monday
+  %b  Abbreviated month name              $ date +%b   ->  Jul
+  %B  Full month name                     $ date +%B   ->  July
+  %c  Locale's date and time              $ date +%c   ->  Mon Jul 28 20:58:46 2025
+  %D  Date as mm/dd/yy                    $ date +%D   ->  07/28/25      [FIXED: was 07/028/25]
+  %j  Day of year (001-366)               $ date +%j   ->  209
+  %n  Insert a new line
+        $ date +"Date is %D%nTime is %T"
+        Date is 07/28/25
+        Time is 21:14:58
+  %p  AM or PM                            $ date +%p   ->  PM
+  %T  Time as HH:MM:SS (24 hour)          $ date +%T   ->  21:18:54
+  %t  Insert a tab
+        $ date +"Date is %D%tTime is %T"
+        Date is 07/28/25    Time is 21:18:54
+  %V  ISO week number of year (01-53), week starts on Monday   [FIXED: range is 01-53]
+        $ date +%V   ->  31
+  [ADDED] %Y  4-digit year   $ date +%Y -> 2025
+  [ADDED] %d  Day of month   $ date +%d -> 28
+  [ADDED] %H:%M  Hour and minute
+
+--------------------------------------------------------------
+2. who
+--------------------------------------------------------------
+Purpose : List users currently logged in, their terminal, login
+          time and the host they logged in from.
+Syntax  : who [options] [file]
+Example : $ who -uH
+Output  :
+  NAME   LINE   TIME           IDLE   PID    COMMENT
+  hiox   tty3   Jul 10 11:08   .      4578
+
+Options:
+  am i : Print the username of the invoking user ('am' and 'i' must be
+         space separated).                       $ who am i
+  -b   : Time of last system boot.                $ who -b
+  -d   : Print dead processes.                    $ who -d
+  -H   : Print column headings above the output.  $ who -H
+  -i   : (older) include idle time; today use -u. $ who -u
+         Idle time '.' means activity within the last minute.
+  -m   : Same as  who am i                        $ who -m
+  -q   : Print only usernames and the count of logged-in users.
+                                                  $ who -q
+  -T, -w : Include the user's message status (+ writable, - not).
+                                                  $ who -T
+                                                  $ who -w
+
+--------------------------------------------------------------
+3. echo
+--------------------------------------------------------------
+Purpose : Print the given string to standard output.
+Syntax  : echo [options] [string]
+Example : $ echo "Hi, I am Savani"
+Output  : Hi, I am Savani
+
+Options:
+  -n : Do not output the trailing newline.
+         $ echo -n "This is newline."
+  -e : Enable interpretation of backslash escapes.
+  -E : Disable interpretation of backslash escapes (default).
+
+Escape sequences recognised with -e:
+  \0NNN  Character whose ASCII code is NNN (octal)
+           $ echo -e "\0101"      ->  A      [FIXED: \0101 prints A]
+  \a     Alert (bell)             $ echo -e "\a"
+  \\     Backslash                $ echo -e "\\"
+  \b     Backspace                $ echo -e "Hi\bX"        ->  HX
+  \c     Suppress trailing newline (and stop output)
+           $ echo -e "Hello\c"; echo "World"       ->  HelloWorld
+  \f     Form feed
+           $ echo -e "Hello World\fThis is Linux Programming"
+  \n     New line
+           $ echo -e "Hello\nWorld"       ->  Hello
+                                              World
+  \r     Carriage return (cursor goes back to start of line)
+           $ echo -e "Hello\rWorld"       ->  World
+  \t     Horizontal tab           $ echo -e "Hello\tWorld"  ->  Hello    World
+  \v     Vertical tab             $ echo -e "Hello\vWorld"
+
+--------------------------------------------------------------
+4. passwd
+--------------------------------------------------------------
+Purpose : Change your password.
+Syntax  : passwd [options] [username]
+Example : $ passwd
+Output  :
+  Old password:
+  New password:
+  Confirm new password:
+
+Options (some need root):
+  -a : Show password attributes for all entries (used with -S).  $ passwd -Sa
+  -l : Lock the password entry for the user.                     $ passwd -l user
+  -d : Delete password for the user (login without password).    $ passwd -d user
+  -e : Expire the password so user must change it at next login. $ passwd -e user
+       [FIXED: expiring is -e on Linux; -f is not the usual option]
+  -u : [ADDED] Unlock a locked account.
+
+--------------------------------------------------------------
+5. pwd
+--------------------------------------------------------------
+Purpose : Print working directory (full path of current directory).
+Syntax  : pwd [options]
+Example : $ pwd
+Output  : /home/Admin
+Options :
+  -P : Path printed will NOT contain symbolic links.  $ pwd -P
+  -L : Path printed MAY contain symbolic links.       $ pwd -L
+
+--------------------------------------------------------------
+6. cal
+--------------------------------------------------------------
+Purpose : Print the calendar.
+Syntax  : cal [options] [month] [year]
+Example : $ cal
+Output  :
+       August 2025
+  Su Mo Tu We Th Fr Sa
+                  1  2
+   3  4  5  6  7  8  9
+  10 11 12 13 14 15 16
+  17 18 19 20 21 22 23
+  24 25 26 27 28 29 30
+  31
+Options:
+  -1 : Display single month (current).
+  -3 : Display previous / current / next month.
+  -s : Sunday as first day of the week.
+  -m : Monday as first day of the week.
+  -j : Julian dates (day of year, 1-based, from January 1).
+  -y : Calendar for the whole current year.
+
+--------------------------------------------------------------
+7. uname
+--------------------------------------------------------------
+Purpose : Print information about the current system.
+Syntax  : uname [options]
+Example : $ uname
+Output  : CYGWIN_NT-10.0-22621
+Options:
+  -a : All basic information currently available.
+  -i : Hardware platform.                 $ uname -a -i
+  -m : Machine hardware name (class).     $ uname -m  -> x86_64
+  -n : Nodename (name on the network).    $ uname -n  -> DESKTOP-FP3DQ1J
+  -p : Processor type (ISA).              $ uname -p  -> x86_64
+  -r : Operating system release.          $ uname -r  -> 3.6.3-1.x86_64
+  -s : Name of the operating system (default).  $ uname -s
+  -v : Operating system version.          $ uname -v  -> 2025-06-05 11:45 UTC
+  -x : Expanded system information.       (Solaris only)
+  -S systemname : Change the nodename.    (Solaris only; needs root)
+
+--------------------------------------------------------------
+8. tty
+--------------------------------------------------------------
+Purpose : Print the filename of the terminal connected to stdin.
+Syntax  : tty [options]
+Example : $ tty
+Output  : /dev/pty0   (on Linux usually /dev/pts/0)
+
+--------------------------------------------------------------
+9. man
+--------------------------------------------------------------
+Purpose : Interface to the system reference manuals.
+Syntax  : man [options] command
+Example : $ man ls        [FIXED: man needs a command name]
+
+--------------------------------------------------------------
+10. clear
+--------------------------------------------------------------
+Purpose : Clear the terminal screen.
+Syntax  : $ clear
+
+==============================================================
+ FILE HANDLING COMMANDS
+==============================================================
+
+--------------------------------------------------------------
+1. cat
+--------------------------------------------------------------
+Purpose : Concatenate files and print on standard output.
+Syntax  : cat [options] [file]
+Options :
+  -A : Show all (same as -vET).
+  -b : Number only non-blank output lines.        [FIXED]
+  -e : Show $ at end of each line, and show non-printing chars (-vE).
+  -E : Display a $ at the end of each line.
+  -n : Number all output lines.
+  -s : Squeeze multiple empty lines into one.
+  -T : Display TAB characters as ^I.
+  -v : Show non-printing characters visibly (except TAB / newline).
+
+(a) Create a new file
+    Syntax  : $ cat > file.txt       (press Ctrl+D to save and exit)
+    Example : $ cat > student.txt
+      RollNo | Name              | Class       | Address    | Mob.No
+      101    | Savani Rajopadhye | T.Y.BSc(CS) | Kothrud    | 8475560890
+      102    | Siddhi Jadhav     | T.Y.BSc(CS) | Kothrud    | 9470554400
+      103    | Shreeya Mohanta   | T.Y.BSc(CS) | Paud       | 8874415801
+      104    | Gayatri Pawar     | T.Y.BSc(CS) | Bavdhan    | 7541101592
+      105    | Soundarya Sadekar | T.Y.BSc(CS) | Navi Peth  | 9824568700
+
+(b) Append data to a file
+    Syntax  : $ cat >> file.txt
+    Example : $ cat >> student.txt
+    Purpose : Use the append operator (>>). With a single > the
+              file is overwritten (all old content erased).
+
+(c) Display a file
+    Syntax  : $ cat file.txt
+    Example : $ cat student.txt
+
+(d) Concatenate several files and display
+    Syntax  : $ cat file1.txt file2.txt
+    Example : $ cat student.txt marks.txt
+    Output  : student details followed by the Marks column
+              (98, 95, 92, 90, 94).
+
+(e) Concatenate several files and store output in another file
+    Syntax  : $ cat file1.txt file2.txt > file3.txt
+    Example : $ cat student.txt marks.txt > file.txt
+    Output  : Creates file.txt containing the combined content.
+
+--------------------------------------------------------------
+2. rm
+--------------------------------------------------------------
+Purpose : Remove / delete files (or directories with -r).
+Syntax  : rm [options] [file | directory]
+Example : $ rm file.txt
+Options :
+  -f : Force removal, never prompt.               [FIXED wording]
+  -i : Interactive; prompt before every removal.
+  -r / -R : Recursively remove directories and their contents.
+
+--------------------------------------------------------------
+3. mkdir
+--------------------------------------------------------------
+Purpose : Create one or more directories.
+Syntax  : mkdir [options] directories
+Example : $ mkdir student
+Options :
+  -m : Set the access mode (permissions) of new directories.
+  -p : Create intervening parent directories if they don't exist.
+         $ mkdir -p a/b/c
+  -v : Print a message for each directory created.
+
+--------------------------------------------------------------
+4. cd
+--------------------------------------------------------------
+Purpose : Change directory.
+Syntax  : cd [directory | ~ | . | .. | -]
+Examples:
+  $ cd student   -> go into 'student' from the current directory
+  $ cd ..        -> go to the parent directory
+  $ cd ~         -> go to home directory (/home/Admin)
+  $ cd -         -> go back to the previous directory   [ADDED]
+Options:
+  -L : Follow logical (symbolic link) structure.
+  -P : Use the physical directory structure.      [FIXED: -P is physical]
+
+--------------------------------------------------------------
+5. cp
+--------------------------------------------------------------
+Purpose : Copy files from one location to another.
+Syntax  : cp [options] source dest
+          cp [options] source... directory
+          cp [options] --target-directory=DIRECTORY source...
+Example : $ cp file1 file2       (copies content of file1 to file2)
+Options :
+  -a : Same as -dpR (archive; preserve everything, recursive).
+  --backup[=CONTROL] : Make a backup of each existing destination file.
+  -b : Like --backup but does not accept an argument.
+  -f : If an existing destination cannot be opened, remove it and retry.
+  -p : Preserve specified attributes.
+  --preserve[=ATTR_LIST] : Preserve mode, ownership, timestamps (default).
+  --no-preserve=ATTR_LIST : Don't preserve the specified attributes.
+  --parents : Append source path to DIRECTORY.
+  -r / -R : [ADDED] Copy directories recursively.
+  -i : [ADDED] Prompt before overwrite.
+  -v : [ADDED] Verbose.
+
+--------------------------------------------------------------
+6. ls
+--------------------------------------------------------------
+Purpose : List files and directories in the current directory.
+Syntax  : ls [options] [file]
+Example : $ ls
+Output  : Student  addressbook  student.txt  marks.txt  file1  file2
+Options :
+  -l   : Long listing: mode, links, owner, group, size, modified date/time, name.
+  -t   : Sort by last modification time.
+  -a   : List all entries including hidden files.
+  -d   : List directories themselves instead of their contents.
+  -p   : Put a slash at the end of each directory name.
+  -u   : Sort by last access time.
+  -i   : Display inode numbers.
+  -ltr : Long listing, oldest first (sorted by date).
+  -lSr : Long listing, smallest first (sorted by file size).
+
+--------------------------------------------------------------
+7. wc
+--------------------------------------------------------------
+Purpose : Word count; prints count of lines, words and characters.
+Syntax  : wc [-c | -m | -C] [-l] [-w] [file...]
+Example : $ wc student.txt
+Output  : 5  24  202  student.txt
+          5 = lines, 24 = words, 202 = characters
+Options :
+  -c : Count bytes.
+  -m : Count characters.
+  -C : Same as -m.
+  -l : Count lines.
+  -w : Count words (delimited by whitespace / newline).
+
+--------------------------------------------------------------
+8. rmdir
+--------------------------------------------------------------
+Purpose : Remove EMPTY directories.               [FIXED: only empty ones]
+Syntax  : rmdir [options] directory
+Example : $ rmdir student     (works only if the directory is empty)
+Option  : -p : Remove the directory and its parent directories if they
+               become empty.
+To remove a non-empty directory with its contents:
+          $ rm -ir student    (interactive)   or   $ rm -r student
+
+--------------------------------------------------------------
+9. mv
+--------------------------------------------------------------
+Purpose : Move or rename files / directories.
+Syntax  : mv [options] oldname newname
+Options :
+  -f : Do not prompt before overwriting an existing target.
+  -i : Prompt before overwriting another file.
+(1) Rename / move a file:
+      $ mv student.txt marks.txt    (renames student.txt as marks.txt)
+(2) Move a directory:
+      Syntax  : mv directory1 directory2
+      Example : $ mv hscript tmp
+      Output  : If 'tmp' already exists, 'hscript' is moved inside it with
+                all its files and sub-directories; otherwise it is renamed.
+
+==============================================================
+ PROCESS UTILITIES
+==============================================================
+
+--------------------------------------------------------------
+1. ps
+--------------------------------------------------------------
+Purpose : Report process status.
+Syntax  : ps [options]
+Example : $ ps       (shows processes of the current terminal)
+Options :
+  -a : All processes except session leaders and processes not
+       associated with a terminal.
+  -A or -e : Information for all processes.
+  -d : All processes except session leaders.
+  -f : Full listing.
+  -j : Print session ID and process group ID.
+  -l : Long listing.
+  [FIXED: -e duplicated -A; merged]
+
+--------------------------------------------------------------
+2. kill
+--------------------------------------------------------------
+Purpose : Terminate / stop a process.
+Syntax  : kill PID        or     kill %jobnumber (background job)
+Example : $ kill 1234
+          $ kill %1
+          $ kill -9 1234   (force kill)           [FIXED: '%pid' is not valid]
+
+--------------------------------------------------------------
+3. diff
+--------------------------------------------------------------
+Purpose : Find differences between two files.
+Syntax  : diff [options] file1 file2
+Example : $ diff file1.txt file2.txt
+          $ diff -w file1.txt file2.txt   (ignore all white space)
+Common options: -w (ignore whitespace), -b (ignore changes in amount of
+whitespace), -i (ignore case), -q (report only if files differ).
+
+
+##############################################################
+ EXPERIMENT 2 : IMPLEMENTATION OF FILTERING COMMANDS
+##############################################################
+
+Aim: Write filtering commands of Linux with options and examples.
+
+Sample file:  $ cat emp.lst
+2233|a.k. shukla    |g.m       |production|12/12/52|6000
+9876|jai sharma     |director  |sales     |12/03/50|7600
+5678|anil aggarwal  |chairman  |admin     |07/09/51|5400
+1006|n.k. gupta     |manager   |sales     |31/12/40|8200
+5423|sudhir agarwal |d.g.m.    |marketing |12/06/43|7500
+1265|lalit chowdury |executive |personnel |01/05/59|9000
+
+--------------------------------------------------------------
+1. pr
+--------------------------------------------------------------
+Purpose : Prepare a file for printing by adding headers, footers
+          and formatting the text.
+Syntax  : pr [options] [filename]
+Example : $ pr emp.lst
+Options :
+  -k  : Print in k columns        (e.g. pr -2 emp.lst)
+  -t  : Suppress headers and footers.
+  -d  : Double-space the input.
+  -n  : Number the lines.
+  -on : Offset lines by n spaces (e.g. -o5).
+
+--------------------------------------------------------------
+2. head
+--------------------------------------------------------------
+Purpose : Display the first ten lines of a file (or a given number).
+Syntax  : head [options] [filename]
+Example : $ head emp.lst
+          $ head -n 3 emp.lst
+Output  :
+  2233|a.k. shukla   |g.m      |production|12/12/52|6000
+  9876|jai sharma    |director |sales     |12/03/50|7600
+  5678|anil aggarwal |chairman |admin     |07/09/51|5400
+Option  : -n : Number of lines to display.
+
+--------------------------------------------------------------
+3. tail
+--------------------------------------------------------------
+Purpose : Display the end of a file (last ten lines by default).
+Syntax  : tail [options] [filename]
+Example : $ tail -n 2 emp.lst
+Output  :
+  5423|sudhir agarwal |d.g.m.    |marketing |12/06/43|7500
+  1265|lalit chowdury |executive |personnel |01/05/59|9000
+Options :
+  -f : Follow; monitor the file as it grows.
+  -c : Extract bytes rather than lines.
+
+--------------------------------------------------------------
+4. cut
+--------------------------------------------------------------
+Purpose : Cut out selected columns or fields of each line.
+Syntax  : cut [options] [file]
+Example : $ cut -c 6-22,24-32 shortlist
+Output  :
+  a.k. shukla     g.m
+  jai sharma      director
+  anil aggarwal   chairman
+  n.k. gupta      manager
+Options :
+  -c : Extract specific character columns.
+  -f : Extract fields; use with -d for the delimiter.
+         $ cut -d "|" -f 2,3 emp.lst            [ADDED example]
+
+--------------------------------------------------------------
+5. paste
+--------------------------------------------------------------
+Purpose : Join corresponding lines of files side by side.
+Syntax  : paste [options] file1 file2
+Example : $ paste list1 list2
+Options :
+  -s : Paste one file at a time instead of in parallel (join lines).
+  -d : Use characters from LIST as delimiter instead of TAB.
+         $ paste -d "|" list1 list2             [ADDED example]
+
+--------------------------------------------------------------
+6. sort
+--------------------------------------------------------------
+Purpose : Sort data in ascending or descending order.
+Syntax  : sort [options] [filename]
+Example : $ sort shortlist
+Options :
+  -k n      : Sort on the nth field.
+  -t char   : Use 'char' as field delimiter.
+  -u        : Remove repeated lines.
+  -n        : Sort numerically.
+  -r        : Reverse sort order.
+  -f        : Fold lowercase to uppercase (ignore case).
+  -m list   : Merge already sorted files.
+  -c        : Check whether the file is sorted.
+  -o file   : Place output in 'file'.
+Example : $ sort -t "|" -k 6 -n emp.lst      (sort by salary)   [ADDED]
+
+--------------------------------------------------------------
+7. uniq
+--------------------------------------------------------------
+Purpose : Fetch one copy of each (adjacent) duplicate line and write it
+          to standard output. Input should be sorted first.
+Syntax  : uniq [options] [filename]
+Example : $ cat dept.lst            $ uniq dept.lst
+          01 accounts 6000          01 accounts 6000
+          01 accounts 6000          02 admin    6200
+          02 admin    6200          03 marketing 6300
+          03 marketing 6300
+          03 marketing 6300
+Options :
+  -u : Show only non-repeated lines.
+  -d : Show only duplicate lines (one copy of each).
+  -c : Count frequency of occurrence of lines.
+
+--------------------------------------------------------------
+8. tr
+--------------------------------------------------------------
+Purpose : Translate characters using one or two compact expressions.
+Syntax  : tr [options] expression1 expression2
+Example : $ tr '|' '~' < emp.lst | head -n 3
+Output  :
+  2233~a.k. shukla~g.m~production~12/12/52~6000
+  9876~jai sharma~director~sales~12/03/50~7600
+  5678~anil aggarwal~chairman~admin~07/09/51~5400
+Options :
+  -d : Delete characters.
+  -s : Squeeze multiple consecutive characters into one.
+  -c : Complement the set of characters in expression1.
+Note: tr reads only from standard input, hence the '<' redirection.
+
+
+##############################################################
+ EXPERIMENT 3 : PATTERN MATCHING COMMANDS (grep, sed)
+##############################################################
+
+Aim: Write pattern matching commands of Linux with options and examples.
+
+--------------------------------------------------------------
+1. grep  -  search for a pattern
+--------------------------------------------------------------
+Syntax  : grep [options] pattern [filenames]
+Example : $ grep "sales" emp.lst
+Output  : all lines containing "sales"
+Options :
+  -i : Ignore case.
+  -v : Display lines NOT matching the pattern.
+  -n : Display line numbers along with the lines.
+  -c : Display count of matching lines.
+  -l : Display only names of files containing the pattern.
+  -f : Take patterns from a file, one per line.
+
+Regular-expression characters:
+ i)  [ ]  Character class - any one character from the set.
+       $ grep "[aA]g[ar]wal" emp.lst
+       3564|sudhir Agarwal|executive|personnel|01/06/47|7500
+       0110|v.k. agrawal  |g.m.     |marketing |12/31/40|9000
+ ii) *    Zero or more of the immediately preceding character.
+       $ grep "[aA]gg*[ar]wal" emp.lst
+ iii) .   Matches any single character.
+       $ grep "j.*saxena" emp.lst
+       2345|j.b. saxena|g.m.|marketing|03/12/45|8000
+ iv) ^    Matches pattern at the beginning of a line.
+       $ grep "^2" emp.lst      (lines starting with 2)
+ v)  $    [ADDED] Matches pattern at the end of a line.
+       $ grep "0$" emp.lst
+ vi) Multiple patterns (extended regex, grep -E / egrep):
+       $ grep -E 'sengupta|dasgupta' emp.lst
+       2305|barun sengupta|director|personnel|11/05/47|7800
+       1265|s.n. dasgupta |manager |sales    |12/09/63|5600
+
+--------------------------------------------------------------
+2. sed  -  stream editor (combines the work of several filters)
+--------------------------------------------------------------
+Syntax  : sed [options] 'address action' file(s)
+Example : $ sed '2q' emp.lst        (print first 2 lines, then quit)
+Output  :
+  2233|a.k. shukla|g.m     |sales     |12/12/52|6000
+  9876|jai sharma |director|production|03/12/50|7000
+Options / commands:
+  -n : Suppress automatic printing (use with p).      [FIXED: p is a command]
+  p  : Print the selected lines.
+  q  : Quit.
+
+1) Context addressing  /pattern/ - select lines by pattern.
+     $ sed -n '/director/p' emp.lst
+     9876|jai sharma     |director|production|03/12/50|7000
+     2365|barun sengupta |director|personnel |05/11/47|7800
+     1006|chanchal singh |director|sales     |09/03/48|6700
+
+3) Text editing
+   a) i, a, c  -  insert, append, change
+        i = insert text before the line
+        a = append text after the line
+        c = change (replace) the line
+      Example:
+        $ sed '1i\
+        > #include <stdio.h>\
+        > #include <unistd.h>
+        > ' foo.c
+
+   b) d  -  delete lines.
+        $ sed '2d' emp.lst        (delete line 2)
+        $ sed '/director/d' emp.lst
+
+   c) s  -  Substitution
+        Purpose : Replace a pattern in its input with something else.
+        Syntax  : [address]s/expression1/expression2/flags
+        Example : $ sed 's/|/:/' emp.lst | head -n 2
+        Output  :
+          2233:a.k. shukla|g.m     |sales     |12/12/52|6000
+          9876:jai sharma |director|production|03/12/50|7000
+        (without the g flag only the FIRST | on each line is replaced;
+         use 's/|/:/g' to replace all)
+
+   d) \( \)  -  sed "remembers" the matched pattern and stores it in \1.
+        Example : $ sed -n '/marketing/s/director/member/p' emp.lst
+        Output  : 6521|lalit chowdary|member|marketing|09/26/45|8200
+
+
+##############################################################
+ EXPERIMENT 4 : IMPLEMENTATION OF AWK COMMANDS
+##############################################################
+
+(i) Create a text file as input
+    $ cat > emp.txt
+    ajay    manager  account   45000
+    sunil   clerk    account   25000
+    varun   manager  sales     50000
+    amit    manager  account   47000
+    tarun   peon     sales     15000
+    deepak  clerk    sales     23000
+    sunil   peon     sales     13000
+    satvik  director purchase  80000
+
+(ii) Default behaviour of awk - prints every line.
+    $ awk '{print}' emp.txt
+
+(iii) Print lines that match a pattern
+    $ awk '/manager/ {print}' emp.txt
+    ajay   manager account 45000
+    varun  manager sales   50000
+    amit   manager account 47000
+
+(iv) Split a line into fields
+    $ awk '{print $1, $4}' emp.txt
+    ajay 45000
+    sunil 25000
+    varun 50000
+    amit 47000
+    tarun 15000
+    deepak 23000
+    sunil 13000
+    satvik 80000          [FIXED: was 8000]
+    * $1 = Name field, $4 = Salary field. $0 = whole line, NF = number of fields.
+
+
+##############################################################
+ EXPERIMENT 5 : CONDITIONAL AND LOOP STRUCTURES USING AWK
+##############################################################
+
+CONDITIONAL STATEMENTS
+----------------------
+1. if statement  -  check whether a number is positive.
+   $ awk 'BEGIN { num=10; if (num > 0) printf "%d is positive number\n", num }'
+   Output : 10 is positive number
+
+2. if-else  -  check whether a number is even or odd.
+   $ awk 'BEGIN {
+       num = 12;
+       if (num % 2 == 0)
+           printf "%d is even number\n", num;
+       else
+           printf "%d is odd number\n", num
+   }'
+   Output : 12 is even number
+
+LOOP STATEMENTS
+---------------
+1. for loop  -  square of numbers 1 to 6.
+   $ awk 'BEGIN { for (i = 1; i <= 6; i++) print "Square of", i, "is", i*i }'
+   Square of 1 is 1
+   Square of 2 is 4
+   Square of 3 is 9
+   Square of 4 is 16
+   Square of 5 is 25
+   Square of 6 is 36
+
+2. while loop  -  print 1 to 5.
+   $ awk 'BEGIN { i=1; while (i < 6) { print i; ++i } }'
+   Output : 1 2 3 4 5 (one per line)
+
+3. do-while loop  -  print 1 to 5.
+   $ awk 'BEGIN { i=1; do { print i; ++i } while (i < 6) }'
+   Output : 1 2 3 4 5 (one per line)
+
+4. break statement  -  stop when the sum exceeds 50.
+   $ awk 'BEGIN {
+       sum = 0;
+       for (i = 0; i < 20; ++i) {
+           sum += i;
+           if (sum > 50) break;
+           else print "Sum =", sum
+       }
+   }'
+   Output : Sum = 0, 1, 3, 6, 10, 15, 21, 28, 36, 45  (one per line)
+
+
+##############################################################
+ EXPERIMENT 6 : BUILT-IN FUNCTIONS & ARRAY OPERATIONS IN AWK
+##############################################################
+
+I. BUILT-IN FUNCTIONS FOR NUMERIC OPERATIONS
+--------------------------------------------
+1. int(n)   - integer part of n
+   $ awk 'BEGIN { print int(3.5); print int(-5) }'
+   Output : 3
+            -5
+2. log(n)   - natural logarithm
+   $ awk 'BEGIN { print log(3.534); print log(4) }'
+   Output : 1.26243
+            1.38629
+3. sqrt(n)  - square root
+   $ awk 'BEGIN { print sqrt(16); print sqrt(0) }'
+   Output : 4
+            0
+4. [ADDED] Other numeric functions: sin(n), cos(n), exp(n), rand(), srand().
+
+II. BUILT-IN FUNCTIONS FOR STRING OPERATIONS
+--------------------------------------------
+1. index(str1, str2)  - position of str2 in str1 (0 if not found)
+   $ awk 'BEGIN { print index("google", "chatgpt") }'
+   Output : 0
+2. length(str)  - number of characters
+   $ awk 'BEGIN { print length("graphic") }'
+   Output : 7
+3. substr(s, p, n)  - substring of s starting at position p (n chars;
+   if n is omitted, up to the end)
+   $ awk 'BEGIN { print substr("graphic era university", 9) }'
+   Output : era university
+4. tolower(s)  - convert to lowercase
+   $ awk 'BEGIN { print tolower("GRAPHIC") }'     [FIXED: print tolower(...)]
+   Output : graphic
+5. toupper(s)  - convert to uppercase
+   $ awk 'BEGIN { print toupper("google") }'
+   Output : GOOGLE
+
+III. AWK ARRAY OPERATIONS
+-------------------------
+Syntax : array_name[index] = value
+
+1. Create an array
+   $ awk 'BEGIN {
+       array[0] = "awk";
+       array[1] = "array";
+       array[2] = "linux";
+       print array[0] "," array[1]
+   }'
+   Output : awk,array
+
+2. Delete an array element
+   $ awk 'BEGIN {
+       array[0] = "awk";
+       array[1] = "array";
+       delete array[1]
+   }'
+   (delete array;  removes the entire array)
+
+3. Print length
+   $ awk 'BEGIN {
+       array[0] = "awk"; array[1] = "array"; array[2] = "linux";
+       print length(array)
+   }'
+   Output : 3
+
+4. Add array elements
+   $ awk 'BEGIN {
+       array[0] = "awk";
+       array[1] = "array";
+       print "array length:", length(array);
+       array[9] = "linux";
+       print "add array element";
+       print "new array length:", length(array)
+   }'
+   Output : array length: 2
+            add array element
+            new array length: 3
+   (awk arrays are associative, so index 9 does not need 2-8.)
+
+5. Sort an array (bubble sort, descending)
+   $ awk '
+   function sort(arr,    n, i, j, tmp) {
+       n = length(arr);
+       for (i = 0; i < n; i++)
+           for (j = 0; j < n-1-i; j++)
+               if (arr[j] < arr[j+1]) {
+                   tmp = arr[j]; arr[j] = arr[j+1]; arr[j+1] = tmp
+               }
+   }
+   BEGIN {
+       array[0] = 10; array[1] = 456; array[2] = 1; array[3] = 4;
+       sort(array);
+       for (i = 0; i < length(array); i++)
+           print array[i]
+   }'
+   Output : 456
+            10
+            4
+            1
+
+
+##############################################################
+ EXPERIMENT 7 : CONDITIONAL STATEMENTS IN SHELL PROGRAMMING
+##############################################################
+
+1. Even or odd number
+   echo "Enter a number"
+   read num
+   if (( num % 2 == 0 )); then
+       echo "$num is an even number"
+   else
+       echo "$num is an odd number"
+   fi
+   Output : Enter a number
+            10
+            10 is an even number
+
+2. Positive, negative or zero
+   echo "Enter a number"
+   read num
+   if (( num > 0 )); then
+       echo "$num is positive no."
+   elif (( num < 0 )); then
+       echo "$num is negative no."
+   else
+       echo "$num is zero"
+   fi
+   Output : Enter a number : 4
+            4 is a positive no.
+
+3. Days of the week using case (switch) statement
+   echo "Enter a number of days of the week"
+   read d_no
+   case $d_no in
+       1) echo "It's Monday!" ;;
+       2) echo "It's Tuesday!" ;;
+       3) echo "It's Wednesday!" ;;
+       4) echo "It's Thursday!" ;;
+       5) echo "It's Friday!" ;;
+       6) echo "It's Saturday!" ;;
+       7) echo "It's Sunday!" ;;
+       *) echo "Invalid input!" ;;
+   esac
+   Output : Enter a number of days of week : 7
+            It's Sunday!
+
+4. Maximum of 2 numbers
+   echo "Enter the first number :"
+   read n1
+   echo "Enter the second number :"
+   read n2
+   if (( n1 > n2 )); then
+       echo "The maximum number is $n1"
+   elif (( n2 > n1 )); then
+       echo "The maximum number is $n2"
+   else
+       echo "The numbers are equal : $n1"
+   fi
+   Output : Enter the first number : 3
+            Enter the second number : 4
+            The maximum number is 4
+
+5. Arithmetic operations
+   a=10
+   b=5
+   add=$(( a + b ))
+   echo "Addition = $add"
+   sub=$(( a - b ))
+   echo "Subtraction = $sub"
+   mul=$(( a * b ))
+   echo "Multiplication = $mul"
+   div=$(( a / b ))
+   echo "Division = $div"
+   Output : Addition       : 15
+            Subtraction    : 5
+            Multiplication : 50
+            Division       : 2
+   (Note: no spaces around '=' in shell variable assignment.)
+
+
+##############################################################
+ EXPERIMENT 8 : LOOP STRUCTURES IN SHELL PROGRAMMING
+##############################################################
+
+1. Armstrong number
+   echo "Enter a number"
+   read c
+   x=$c
+   sum=0
+   while [ $x -gt 0 ]
+   do
+       r=$(( x % 10 ))
+       n=$(( r * r * r ))
+       sum=$(( sum + n ))
+       x=$(( x / 10 ))
+   done
+   if [ $sum -eq $c ]
+   then
+       echo "It is an Armstrong Number."
+   else
+       echo "It is not an Armstrong Number."
+   fi
+   Output : Enter a number : 154
+            It is not an Armstrong Number.
+            Enter a number : 153
+            It is an Armstrong Number.
+   [FIXED: no spaces around '=' (x=$c); used $(( )) instead of
+    expr with backticks; 'r*r*r' is the cube for 3-digit numbers.]
+   (For numbers with any number of digits, raise each digit to the
+    power of the digit count.)
+
+2. Reverse of a number
+   echo "Enter a number"
+   read n
+   reverse=0
+   while [ $n -gt 0 ]
+   do
+       remainder=$(( n % 10 ))
+       reverse=$(( reverse * 10 + remainder ))
+       n=$(( n / 10 ))
+   done
+   echo "Reversed number is $reverse"
+   Output : Enter a number : 124
+            Reversed number is 421
+   [FIXED: original used $num in the remainder line; the variable is n]
+
+3. Factorial of a number
+   echo "Factorial Calculation"
+   echo "Enter a number"
+   read n
+   if (( n < 0 )); then
+       echo "Factorial is not defined for negative number"
+   elif (( n == 0 )); then
+       echo "Factorial of 0 is 1"
+   else
+       fact=1
+       for (( i=1; i<=n; i++ ))
+       do
+           fact=$(( fact * i ))
+       done
+       echo "Factorial of $n is $fact"
+   fi
+   Output : Factorial Calculation
+            Enter a number : 4
+            Factorial of 4 is 24
+
+4. Fibonacci series
+   echo "Fibonacci Series"
+   echo "Enter the number"
+   read n
+   if (( n <= 0 )); then
+       echo "Please enter a positive no. of terms"
+   elif (( n == 1 )); then
+       echo "Fibonacci Series : 0"
+   else
+       a=0
+       b=1
+       echo "Fibonacci Series :"
+       echo -n "$a "
+       echo -n "$b "
+       for (( i=2; i<n; i++ ))
+       do
+           next_term=$(( a + b ))
+           echo -n "$next_term "
+           a=$b
+           b=$next_term
+       done
+       echo ""
+   fi
+   Output : Fibonacci Series
+            Enter the number : 10
+            Fibonacci Series :
+            0 1 1 2 3 5 8 13 21 34
+   [FIXED: variable names consistent (next_term); no spaces around '=';
+    a space added after each printed term]
+
+==============================================================
+ END OF NOTES
+==============================================================
